@@ -480,6 +480,16 @@ unsigned char DTE_unsolicitedResultCode(DTE *this)
   return URC_unsolicitedResultCode(&Urc, this->response);
 }
 
+const char *DTE_getResponse(DTE *this)
+{
+  return this->response;
+}
+
+unsigned char DTE_isEcho(DTE *this)
+{
+  return this->echo;
+}
+
 unsigned char DTE_setEcho(DTE *this, unsigned char echo)
 {
   if (this->echo == echo)
@@ -532,6 +542,11 @@ long DTE_getBaudrate(DTE *this)
     return 0;
   return this->baudrate;
 }
+
+unsigned char DTE_isPowerDown(DTE *this)
+{
+  return this->powerDown;
+};
 
 unsigned char DTE_powerReset(DTE *this)
 {

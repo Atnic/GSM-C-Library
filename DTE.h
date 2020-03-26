@@ -267,13 +267,13 @@ unsigned char DTE_unsolicitedResultCode(DTE *this);
  * Get last response
  * @return  Response
  */
-const char *DTE_getResponse(DTE *this) { return this->response; }
+const char *DTE_getResponse(DTE *this);
 
 /**
  * Is Echo is enable
  * @return  true: If enable, false: Otherwise
  */
-unsigned char DTE_isEcho(DTE *this) { return this->echo; }
+unsigned char DTE_isEcho(DTE *this);
 
 /**
  * Set Echo
@@ -322,7 +322,7 @@ long DTE_getBaudrate(DTE *this);
  * Is SIM Module power is down
  * @return  true: If power is down, false: Otherwise
  */
-unsigned char DTE_isPowerDown(DTE *this) { return this->powerDown; };
+unsigned char DTE_isPowerDown(DTE *this);
 
 /**
  * Reset Power SIM Module
