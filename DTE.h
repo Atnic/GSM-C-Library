@@ -3,14 +3,11 @@
 
 #include <stddef.h>
 
-#ifndef VA_MACRO
 #define NUM_ARGS_(_1, _2, _3, _4, _5, _6, _7, _8, TOTAL, ...) TOTAL
 #define NUM_ARGS(...) NUM_ARGS_(__VA_ARGS__, 6, 5, 4, 3, 2, 1, 0)
 #define CONCATE_(X, Y) X##Y
 #define CONCATE(MACRO, NUMBER) CONCATE_(MACRO, NUMBER)
-#define VA_MACRO(MACRO, ...) CONCATE(MACRO, NUM_ARGS(__VA_ARGS__)) \
-(__VA_ARGS__)
-#endif
+#define VA_MACRO(MACRO, ...) CONCATE(MACRO, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
 #define FALSE 0
 #define TRUE 1

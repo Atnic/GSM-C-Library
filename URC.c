@@ -31,7 +31,7 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
   else if ((pointer = strstr(urc, (const char *)urcHttpAction)) != NULL)
   {
     pointer += strlen((const char *)urcHttpAction);
-    char *str = strtok(pointer, ",");
+    char *str = strtok_r(pointer, ",", &pointer);
     unsigned char i = 0;
     for (i = 0; i < 3 && str != NULL; i++)
     {
@@ -41,7 +41,7 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
         this->httpAction.statusCode = atoi(str);
       if (i == 2)
         this->httpAction.dataLength = atoi(str);
-      str = strtok(NULL, ",");
+      str = strtok_r(pointer, ",", &pointer);
     }
     if (i >= 3)
       this->httpAction.updated = TRUE;
@@ -50,7 +50,7 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
   else if ((pointer = strstr(urc, (const char *)urcEnterPin)) != NULL)
   {
     pointer += strlen((const char *)urcEnterPin);
-    char *str = strtok(pointer, "\"");
+    char *str = strtok_r(pointer, "\"", &pointer);
     strcpy(this->enterPin.code, str);
     this->enterPin.updated = TRUE;
     return TRUE;
@@ -58,7 +58,7 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
   else if ((pointer = strstr(urc, (const char *)urcGetLocalTimestamp)) != NULL)
   {
     pointer += strlen((const char *)urcGetLocalTimestamp);
-    char *str = strtok(pointer, ",\" +");
+    char *str = strtok_r(pointer, ",\" +", &pointer);
     for (unsigned char i = 0; i < 8 && str != NULL; i++)
     {
       if (i == 0)
@@ -75,7 +75,7 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
         this->psuttz.second = atoi(str);
       if (i == 6)
         this->psuttz.timezone = atoi(str) / 4;
-      str = strtok(NULL, ",\" +");
+      str = strtok_r(pointer, ",\" +", &pointer);
     }
     this->psuttz.updated = TRUE;
     return TRUE;
@@ -83,9 +83,9 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
   else if ((pointer = strstr(urc, (const char *)urcNewMessageIndication)) != NULL)
   {
     pointer += strlen((const char *)urcNewMessageIndication);
-    char *str = strtok(pointer, "\",");
+    char *str = strtok_r(pointer, "\",", &pointer);
     strcpy(this->newMessageIndication.mem, str);
-    str = strtok(NULL, "\",");
+    str = strtok_r(pointer, "\",", &pointer);
     this->newMessageIndication.index = atoi(str);
     this->newMessageIndication.updated = TRUE;
     return TRUE;
@@ -101,11 +101,11 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
   else if ((pointer = strstr(urc, (const char *)urcServiceDataIndication)) != NULL)
   {
     pointer += strlen((const char *)urcServiceDataIndication);
-    char *str = strtok(pointer, ",");
+    char *str = strtok_r(pointer, ",", &pointer);
     this->serviceDataIndication.n = atoi(str);
-    str = strtok(NULL, "\"");
+    str = strtok_r(pointer, "\"", &pointer);
     strcpy(this->serviceDataIndication.str, str);
-    str = strtok(NULL, "\",");
+    str = strtok_r(pointer, "\",", &pointer);
     this->serviceDataIndication.dcs = atoi(str);
     this->serviceDataIndication.updated = TRUE;
     return TRUE;
@@ -115,7 +115,7 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
     if (this->newMessage.message == NULL)
       return FALSE;
     pointer = strstr(this->newMessage.message->data, (const char *)urcNewMessage) + strlen((const char *)urcNewMessage);
-    char *str = strtok(pointer, ",");
+    char *str = strtok_r(pointer, ",", &pointer);
     for (size_t i = 0; str != NULL; i++)
     {
       if (i == 0)
@@ -136,7 +136,7 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
           if (strlen(str) == 20)
           {
             strcpy(this->newMessage.message->timestamp, str);
-            str = strtok(NULL, ",");
+            str = strtok_r(pointer, ",", &pointer);
           }
           this->newMessage.message->typeOfAddress = atoi(str);
         }
@@ -149,7 +149,7 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
         if (i == 6)
         {
           if ((this->newMessage.message->firstOctet & 0x03) == 0x02)
-            str = strtok(NULL, ",");
+            str = strtok_r(pointer, ",", &pointer);
           strncpy(this->newMessage.message->serviceCenterAddress, str + 1, strlen(str + 1) - 1);
           this->newMessage.message->serviceCenterAddress[strlen(str + 1) - 1] = '\0';
         }
@@ -158,9 +158,9 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
         if (i == 8)
           this->newMessage.message->length = atoi(str);
         if (i == 1)
-          str = strtok(NULL, "\"");
+          str = strtok_r(pointer, "\"", &pointer);
         else
-          str = strtok(NULL, ",");
+          str = strtok_r(pointer, ",", &pointer);
       }
       else
       {
@@ -168,7 +168,7 @@ unsigned char URC_unsolicitedResultCode(URC *this, const char urcResponse[])
         {
           // if(strlen(this->newMessage.message->address) == 0) this->newMessage.message->mr = atoi(str);
         }
-        str = strtok(NULL, ",");
+        str = strtok_r(pointer, ",", &pointer);
       }
     }
     strcpy(this->newMessage.message->data, urc);

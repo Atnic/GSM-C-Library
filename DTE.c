@@ -141,14 +141,14 @@ unsigned char DTE_atSetLocalDataFlowControlQuery(DTE *this)
   if (!DTE_ATResponseContain(this, response))
     return FALSE;
   char *pointer = strstr(DTE_getResponse(this), (const char *)response) + strlen((const char *)response);
-  char *str = strtok(pointer, ",");
+  char *str = strtok_r(pointer, ",", &pointer);
   for (size_t i = 0; i < 2 && str != NULL; i++)
   {
     if (i == 0)
       flowControl.dce = str[0] - '0';
     if (i == 1)
       flowControl.dte = str[0] - '0';
-    str = strtok(NULL, ",");
+    str = strtok_r(pointer, ",", &pointer);
   }
   if (!DTE_ATResponseOk(this))
     return FALSE;
@@ -384,6 +384,7 @@ unsigned char DTE_ATResponse(DTE *this, char buffer[], size_t bufferSize, unsign
         if (buffer[i - 2] == '\r' && buffer[i - 1] == '\n')
           break;
       }
+      DTE_delay(this, 1);
     }
 
     if (i >= 2)
@@ -402,6 +403,7 @@ unsigned char DTE_ATResponse(DTE *this, char buffer[], size_t bufferSize, unsign
       buffer[i] = '\0';
       break;
     }
+    DTE_delay(this, 1);
   }
   DTE_debugPrint(this, "Response: ", TRUE);
   DTE_debugPrint(this, buffer, TRUE);
